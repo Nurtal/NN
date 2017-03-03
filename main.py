@@ -19,12 +19,13 @@ import sys
 ############################################
 
 # Prepare Data
+reformat_inputFile("../RD/sample/DATA/MATRIX/matrix_binary.csv", "../RD/sample/DATA/patientIndex.csv")
 #PathToMatrixFile = "../RD/sample/DATA/MATRIX/discrete_processed_binary.csv"
 #PathToMatrixLabelFile = "../RD/sample/DATA/MATRIX/discrete_processed_binary_label.csv"
 PathToMatrixFile = "DATA/data_formated.csv"
 PathToMatrixLabelFile = "DATA/data_formated_label.csv"
 
-binaryClassification = 0
+binaryClassification = 1
 sizeOfValidationSet = 30
 numberOfPatient = get_NumberOfPatients(PathToMatrixFile)
 matrix = generate_TrainingAndValidationMatrix(PathToMatrixFile, sizeOfValidationSet)

@@ -146,6 +146,3 @@ def reformat_inputFile(input_file_name, index_file_name):
 	label_file.close()
 	matrix_file.close()
 	input_file_data.close()
-
-
-#reformat_inputFile("../RD/sample/DATA/CYTOKINES/discreteMatrix_imputed_binary.csv", "../RD/sample/DATA/patientIndex.csv")
