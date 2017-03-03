@@ -5,8 +5,8 @@ main for NN project
 #-------------#
 # IMPORTATION #######################################################################
 #-------------#
-from NeuralNetwork import *
-from DataManager import *
+import NeuralNetwork
+import DataManager
 import sys
 
 
@@ -19,17 +19,15 @@ import sys
 ############################################
 
 # Prepare Data
-reformat_inputFile("../RD/sample/DATA/MATRIX/matrix_binary.csv", "../RD/sample/DATA/patientIndex.csv")
-#PathToMatrixFile = "../RD/sample/DATA/MATRIX/discrete_processed_binary.csv"
-#PathToMatrixLabelFile = "../RD/sample/DATA/MATRIX/discrete_processed_binary_label.csv"
+DataManager.reformat_inputFile("../RD/sample/DATA/MATRIX/matrix_binary.csv", "../RD/sample/DATA/patientIndex.csv")
 PathToMatrixFile = "DATA/data_formated.csv"
 PathToMatrixLabelFile = "DATA/data_formated_label.csv"
 
-binaryClassification = 1
+binaryClassification = 0
 sizeOfValidationSet = 30
-numberOfPatient = get_NumberOfPatients(PathToMatrixFile)
-matrix = generate_TrainingAndValidationMatrix(PathToMatrixFile, sizeOfValidationSet)
-labels = generate_LabelsVectors(PathToMatrixLabelFile, binaryClassification, sizeOfValidationSet, numberOfPatient)
+numberOfPatient = DataManager.get_NumberOfPatients(PathToMatrixFile)
+matrix = DataManager.generate_TrainingAndValidationMatrix(PathToMatrixFile, sizeOfValidationSet)
+labels = DataManager.generate_LabelsVectors(PathToMatrixLabelFile, binaryClassification, sizeOfValidationSet, numberOfPatient)
 X = matrix[0]
 X_validation = matrix[1]
 y = labels[0]
@@ -49,4 +47,4 @@ else:
 	outputLayerSize = int(len(distinctValue))
 
 # Run the Neural Network
-TrainAndValidate(X, y, X_validation, y_validation, outputLayerSize)
+NeuralNetwork.TrainAndValidate(X, y, X_validation, y_validation, outputLayerSize)
