@@ -19,9 +19,12 @@ import sys
 ############################################
 
 # Prepare Data
-PathToMatrixFile = "../RD/DATA/MATRIX/discrete_processed_binary.csv"
-PathToMatrixLabelFile = "../RD/DATA/MATRIX/discrete_processed_binary_label.csv"
-binaryClassification = 1
+#PathToMatrixFile = "../RD/sample/DATA/MATRIX/discrete_processed_binary.csv"
+#PathToMatrixLabelFile = "../RD/sample/DATA/MATRIX/discrete_processed_binary_label.csv"
+PathToMatrixFile = "DATA/data_formated.csv"
+PathToMatrixLabelFile = "DATA/data_formated_label.csv"
+
+binaryClassification = 0
 sizeOfValidationSet = 30
 numberOfPatient = get_NumberOfPatients(PathToMatrixFile)
 matrix = generate_TrainingAndValidationMatrix(PathToMatrixFile, sizeOfValidationSet)
