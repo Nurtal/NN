@@ -128,8 +128,7 @@ def reformat_inputFile(input_file_name, index_file_name):
 
 						if(index_identifiant == patient_identifiant):
 							patient_diagnostique = index_diagnostique
-							print patient_diagnostique
-
+							
 					index_file.close()
 
 

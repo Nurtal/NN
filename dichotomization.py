@@ -240,6 +240,7 @@ def save_dichotomized_matrix_in_file(index_to_variable, row_to_patient, data, nu
 
 
 """TEST SPACE"""
+"""
 data = numpy.array([[45, 10, 23,0], [21,12,87,5],[87,2,56,10]])
 variable = numpy.array([0,1,5,6,4,10])
 
@@ -260,7 +261,7 @@ truc = dichotomize(data, tables_test)
 
 # save dichotomized matrix in a file to be processed by NN
 save_dichotomized_matrix_in_file(pack[1], pack[2], truc, 5, "DATA/MATRIX/panel_6_dichotomized.csv")
-
+"""
 	
 
 
