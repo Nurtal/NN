@@ -128,6 +128,8 @@ def reformat_inputFile(input_file_name, index_file_name):
 
 						if(index_identifiant == patient_identifiant):
 							patient_diagnostique = index_diagnostique
+							print patient_diagnostique
+
 					index_file.close()
 
 
@@ -146,3 +148,60 @@ def reformat_inputFile(input_file_name, index_file_name):
 	label_file.close()
 	matrix_file.close()
 	input_file_data.close()
+
+
+
+def merge_input_files(input_file_1, input_file_2):
+	"""
+	-> merge file 1 and file 2, delete the OMICID column in file
+	   2.
+	-> create a new output file
+
+	TODO:
+		- generation of the output file name
+	"""
+
+	output_file_name = "DATA/data_merged.csv" 
+	line_vector = []
+	index_omicid = "undef"
+	output_file = open(output_file_name, "w")
+
+	input_data_1 = open(input_file_1, "r")
+	cmpt_patient_1 = 0
+	for line in input_data_1:
+		line = line.split("\n")
+		line = line[0]
+		line_vector.append(line)
+		cmpt_patient_1 += 1
+	input_data_1.close()
+
+	input_data_2 = open(input_file_2, "r")
+	cmpt_patient_2 = 0
+	for line in input_data_2:
+		line = line.split("\n")
+		line = line[0]
+		line_array = line.split(";")
+
+		if(cmpt_patient_2 == 0):
+			cmpt_index = 0
+			for scalar in line_array:
+				if(scalar == "OMICID"):
+					index_omicid = cmpt_index
+				cmpt_index+= 1 
+
+		line_to_add = ";"
+		cmpt_index = 0
+		for scalar in line_array:
+			if(cmpt_index != index_omicid):
+				line_to_add += str(scalar) + ";"
+			cmpt_index += 1
+
+		line_to_write = line_vector[cmpt_patient_2] + line_to_add[:-1]
+		output_file.write(line_to_write+"\n")
+
+		cmpt_patient_2 += 1
+	input_data_2.close()
+
+	output_file.close()
+
+

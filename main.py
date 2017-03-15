@@ -19,7 +19,8 @@ import sys
 ############################################
 
 # Prepare Data
-DataManager.reformat_inputFile("../RD/sample/DATA/MATRIX/matrix_binary.csv", "../RD/sample/DATA/patientIndex.csv")
+DataManager.merge_input_files("../RD/sample/DATA/MATRIX/panel_1_dichotomized.csv", "../RD/sample/DATA/MATRIX/panel_2_dichotomized.csv")
+DataManager.reformat_inputFile("DATA/data_merged.csv", "../RD/sample/DATA/patientIndex.csv")
 PathToMatrixFile = "DATA/data_formated.csv"
 PathToMatrixLabelFile = "DATA/data_formated_label.csv"
 
