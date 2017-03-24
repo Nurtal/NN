@@ -8,7 +8,7 @@ from sklearn.neural_network import MLPClassifier
 
 
 
-def TrainAndValidate(X, y, X_validation, y_validation, outputLayerSize):
+def TrainAndValidate(X, y, X_validation, y_validation, outputLayerSize, display):
 	"""
 	-> first use of the MLPClassifier
 	TODO:
@@ -30,10 +30,13 @@ def TrainAndValidate(X, y, X_validation, y_validation, outputLayerSize):
 	prediction = clf.predict(X_validation)
 	index = 0
 	for element in prediction:
-		print str(element) + " || " + y_validation[index]
+		if(display):
+			print str(element) + " || " + y_validation[index]
 		if(str(element) == str(y_validation[index])):
 			score += 1
 		index += 1
 
 	score = (float(score) / float(len(y_validation)))*100
-	print "[SCORE] "+str(float(score)) +"%"
+	if(display):
+		print "[SCORE] "+str(float(score)) +"%"
+	return score

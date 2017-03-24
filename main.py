@@ -29,7 +29,7 @@ import os
 # - save dihotomized matrix in a file
 # - merge the files of interest
 # - format the file to be process by the neural network
-panels_to_process = ["4", "5"]
+panels_to_process = ["1", "2", "3"]
 number_of_intervals_for_dichtomization = 5
 
 # => Dichotomization
@@ -64,14 +64,14 @@ if(len(panels_to_process) > 1):
 			DataManager.merge_input_files("DATA/data_merged.tmp", input_file_name_2)
 			os.remove("DATA/data_merged.tmp")
 
-
+			
 # => Reformat file
 DataManager.reformat_inputFile("DATA/data_merged.csv", "../RD/sample/DATA/patientIndex.csv")
 PathToMatrixFile = "DATA/data_formated.csv"
 PathToMatrixLabelFile = "DATA/data_formated_label.csv"
 
 binaryClassification = 1
-sizeOfValidationSet = 30
+sizeOfValidationSet = 60
 numberOfPatient = DataManager.get_NumberOfPatients(PathToMatrixFile)
 matrix = DataManager.generate_TrainingAndValidationMatrix(PathToMatrixFile, sizeOfValidationSet)
 labels = DataManager.generate_LabelsVectors(PathToMatrixLabelFile, binaryClassification, sizeOfValidationSet, numberOfPatient)
@@ -94,4 +94,4 @@ else:
 	outputLayerSize = int(len(distinctValue))
 
 # Run the Neural Network
-NeuralNetwork.TrainAndValidate(X, y, X_validation, y_validation, outputLayerSize)
+NeuralNetwork.TrainAndValidate(X, y, X_validation, y_validation, outputLayerSize, 1)

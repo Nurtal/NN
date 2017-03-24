@@ -34,7 +34,7 @@ else:
 	outputLayerSize = int(len(distinctValue))
 
 # Run the Neural Network
-score = NeuralNetwork.TrainAndValidate(X, y, X_validation, y_validation, outputLayerSize)
+score = NeuralNetwork.TrainAndValidate(X, y, X_validation, y_validation, outputLayerSize, 0)
 
 # write result in log file
 log_file = open("dichotomization_exploration_panel_"+str(panel)+".log", "a")
