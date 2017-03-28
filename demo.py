@@ -11,7 +11,7 @@ DataManager.reformat_inputFile("../RD/sample/DATA/MATRIX/data_dichotomized_patte
 PathToMatrixFile = "DATA/data_formated.csv"
 PathToMatrixLabelFile = "DATA/data_formated_label.csv"
 
-binaryClassification = 1
+binaryClassification = 0
 sizeOfValidationSet = 60
 numberOfPatient = DataManager.get_NumberOfPatients(PathToMatrixFile)
 numberOfSample = numberOfPatient / sizeOfValidationSet
@@ -25,19 +25,6 @@ y_sets = matrix_sets[2]
 y_validation_sets = matrix_sets[3]
 
 
-# Define few parameter (only one actually)
-# for the neural network
-outputLayerSize = "undef"
-if(binaryClassification):
-	outputLayerSize = 2
-else:
-	distinctValue = []
-	for element in y:
-		if element not in distinctValue:
-			distinctValue.append(element)
-	outputLayerSize = int(len(distinctValue))
-
-
 # Run the Neural Network
 score_list = []
 for x in range(0, numberOfSample):
@@ -45,6 +32,21 @@ for x in range(0, numberOfSample):
 	X_validation = X_validation_sets[x]
 	y = y_sets[x]
 	y_validation = y_validation_sets[x]
+
+
+
+	# Define few parameter (only one actually)
+	# for the neural network
+	outputLayerSize = "undef"
+	if(binaryClassification):
+		outputLayerSize = 2
+	else:
+		distinctValue = []
+		for element in y:
+			if element not in distinctValue:
+				distinctValue.append(element)
+		outputLayerSize = int(len(distinctValue))
+
 
 	score = NeuralNetwork.TrainAndValidate(X, y, X_validation, y_validation, outputLayerSize, 0)
 	score_list.append(score)
