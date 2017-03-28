@@ -11,6 +11,7 @@ import dichotomization
 import sys
 import shutil
 import os
+import numpy
 
 #-------#
 # TRASH ###########################################################################
@@ -19,6 +20,13 @@ import os
 ############################################
 # Running neural network, the basic method #
 ############################################
+
+command = sys.argv[1]
+
+
+
+
+
 
 #-------------------#
 #  => Prepare Data  #
@@ -70,28 +78,79 @@ DataManager.reformat_inputFile("DATA/data_merged.csv", "../RD/sample/DATA/patien
 PathToMatrixFile = "DATA/data_formated.csv"
 PathToMatrixLabelFile = "DATA/data_formated_label.csv"
 
-binaryClassification = 1
-sizeOfValidationSet = 60
-numberOfPatient = DataManager.get_NumberOfPatients(PathToMatrixFile)
-matrix = DataManager.generate_TrainingAndValidationMatrix(PathToMatrixFile, sizeOfValidationSet)
-labels = DataManager.generate_LabelsVectors(PathToMatrixLabelFile, binaryClassification, sizeOfValidationSet, numberOfPatient)
-X = matrix[0]
-X_validation = matrix[1]
-y = labels[0]
-y_validation = labels[1]
+
+if(command == "main"):
+
+	# Very basic way
+
+	binaryClassification = 1
+	sizeOfValidationSet = 60
+	numberOfPatient = DataManager.get_NumberOfPatients(PathToMatrixFile)
+	matrix = DataManager.generate_TrainingAndValidationMatrix(PathToMatrixFile, sizeOfValidationSet)
+	labels = DataManager.generate_LabelsVectors(PathToMatrixLabelFile, binaryClassification, sizeOfValidationSet, numberOfPatient)
+	X = matrix[0]
+	X_validation = matrix[1]
+	y = labels[0]
+	y_validation = labels[1]
 
 
-# Define few parameter (only one actually)
-# for the neural network
-outputLayerSize = "undef"
-if(binaryClassification):
-	outputLayerSize = 2
-else:
-	distinctValue = []
-	for element in y:
-		if element not in distinctValue:
-			distinctValue.append(element)
-	outputLayerSize = int(len(distinctValue))
+	# Define few parameter (only one actually)
+	# for the neural network
+	outputLayerSize = "undef"
+	if(binaryClassification):
+		outputLayerSize = 2
+	else:
+		distinctValue = []
+		for element in y:
+			if element not in distinctValue:
+				distinctValue.append(element)
+		outputLayerSize = int(len(distinctValue))
 
-# Run the Neural Network
-NeuralNetwork.TrainAndValidate(X, y, X_validation, y_validation, outputLayerSize, 1)
+	# Run the Neural Network
+	NeuralNetwork.TrainAndValidate(X, y, X_validation, y_validation, outputLayerSize, 1)
+
+
+
+# TEST SPACE
+if(command == "cross_validation"):
+	binaryClassification = 1
+	sizeOfValidationSet = 60
+	numberOfPatient = DataManager.get_NumberOfPatients(PathToMatrixFile)
+	numberOfSample = numberOfPatient / sizeOfValidationSet
+	numberOfPatient = DataManager.get_NumberOfPatients(PathToMatrixFile)
+
+	matrix_sets = DataManager.cross_validation(PathToMatrixFile, PathToMatrixLabelFile, sizeOfValidationSet, binaryClassification)
+
+	X_sets = matrix_sets[0]
+	X_validation_sets = matrix_sets[1]
+	y_sets = matrix_sets[2]
+	y_validation_sets = matrix_sets[3]
+
+
+	# Define few parameter (only one actually)
+	# for the neural network
+	outputLayerSize = "undef"
+	if(binaryClassification):
+		outputLayerSize = 2
+	else:
+		distinctValue = []
+		for element in y:
+			if element not in distinctValue:
+				distinctValue.append(element)
+		outputLayerSize = int(len(distinctValue))
+
+
+	# Run the Neural Network
+	score_list = []
+	for x in range(0, numberOfSample):
+		X = X_sets[x]
+		X_validation = X_validation_sets[x]
+		y = y_sets[x]
+		y_validation = y_validation_sets[x]
+
+		score = NeuralNetwork.TrainAndValidate(X, y, X_validation, y_validation, outputLayerSize, 0)
+		score_list.append(score)
+
+	# compute final score
+	final_score = numpy.average(score_list)
+	print final_score

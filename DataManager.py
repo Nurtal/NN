@@ -3,6 +3,8 @@ Data Manager for the NN projet
 - Deal with data files, matrix creation & co ...
 """
 
+import random
+
 
 def get_NumberOfPatients(PathToMatrixFile):
 	"""
@@ -204,3 +206,77 @@ def merge_input_files(input_file_1, input_file_2):
 	output_file.close()
 
 
+
+def cross_validation(PathToMatrixFile, PathToMatrixLabelFile, sizeOfValidationSet, binaryClassification):
+
+	numberOfPatient = get_NumberOfPatients(PathToMatrixFile)
+	numberOfSample = numberOfPatient / sizeOfValidationSet
+	numberOfSample_reste = numberOfPatient % sizeOfValidationSet
+
+	X_sets = []
+	X_validation_sets = []
+	y_sets = []
+	y_validation_sets = []
+
+	list_of_training_set = []
+	for k in range(0, numberOfSample):
+		index_of_train_vector = []
+		for x in range(0, sizeOfValidationSet):
+			index = random.randint(0, numberOfPatient)
+			index_of_train_vector.append(index)
+		
+		list_of_training_set.append(index_of_train_vector)
+
+		X = []
+		X_validation = []
+
+		inputDataFile = open(PathToMatrixFile, "r")
+		cmpt = 0
+		for line in inputDataFile:
+			lineWithoutBackN = line.split("\n")
+			lineWithoutBackN = lineWithoutBackN[0]
+			lineInArray = lineWithoutBackN.split(";")
+			vector = []
+			for scalar in lineInArray:
+				vector.append(int(scalar))
+			if(cmpt not in index_of_train_vector):
+				X.append(vector)
+			else:
+				X_validation.append(vector)
+			cmpt +=1
+		inputDataFile.close()
+
+		X_sets.append(X)
+		X_validation_sets.append(X_validation)
+
+
+		y = []
+		y_validation = []
+		inputLabelFile = open(PathToMatrixLabelFile, "r")
+		cmpt = 0
+		for line in inputLabelFile:
+			lineWithoutBackN = line.split("\n")
+			lineWithoutBackN = lineWithoutBackN[0]
+
+			scalar = lineWithoutBackN
+
+			if(binaryClassification):
+				if(lineWithoutBackN != "control" and lineWithoutBackN != "Control"):
+					scalar = "Malade"
+				else:
+					scalar = "Control"
+
+			if(cmpt not in index_of_train_vector):
+				y.append(scalar)
+			else:
+				y_validation.append(scalar)
+			cmpt += 1
+		inputLabelFile.close()
+
+		y_sets.append(y)
+		y_validation_sets.append(y_validation)
+
+
+
+	
+	return (X_sets, X_validation_sets, y_sets, y_validation_sets)
