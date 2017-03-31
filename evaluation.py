@@ -2,11 +2,16 @@ import DataManager
 import NeuralNetwork
 import sys
 import numpy
+import platform
 
 
 
 # => Reformat file
-DataManager.reformat_inputFile("..\\RD\\sample\\DATA\\MATRIX\\data_dichotomized_pattern_individual_to_evaluate.csv", "..\\RD\\sample\\DATA\\patientIndex.csv")
+if(platform.system() == "Windows"):
+	DataManager.reformat_inputFile("..\\RD\\sample\\DATA\\MATRIX\\data_dichotomized_pattern_individual_to_evaluate.csv", "..\\RD\\sample\\DATA\\patientIndex.csv")
+elif(platform.system() == "Linux"):
+	DataManager.reformat_inputFile("../RD/sample/DATA/MATRIX/data_dichotomized_pattern_individual_to_evaluate.csv", "../RD/sample/DATA/patientIndex.csv")
+
 PathToMatrixFile = "DATA/data_formated.csv"
 PathToMatrixLabelFile = "DATA/data_formated_label.csv"
 
