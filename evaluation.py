@@ -6,6 +6,10 @@ import platform
 
 
 
+# => filter data
+strategy_filter = sys.argv[1]
+DataManager.filter_input_data("../RD/sample/DATA/MATRIX/data_dichotomized_pattern_individual_to_evaluate.csv", "../RD/sample/DATA/patientIndex.csv", strategy_filter)
+
 # => Reformat file
 if(platform.system() == "Windows"):
 	DataManager.reformat_inputFile("..\\RD\\sample\\DATA\\MATRIX\\data_dichotomized_pattern_individual_to_evaluate.csv", "..\\RD\\sample\\DATA\\patientIndex.csv")

@@ -284,10 +284,13 @@ def cross_validation(PathToMatrixFile, PathToMatrixLabelFile, sizeOfValidationSe
 
 
 
-def filter_input_data(input_file_name, index_file_name):
+def filter_input_data(input_file_name, index_file_name, method):
 	"""
 	-> filter input data, to use before reformat input.
 	-> reorder proportion of control/patient in cohorte
+	-> two type of filter:
+		- type 1 : (method = random)
+		- type 2 : (method = disease, could be SLE, SjS ...)
 	"""
 
 
@@ -352,31 +355,67 @@ def filter_input_data(input_file_name, index_file_name):
 	input_file_data.close()
 	matrix_file.close()
 
-	#----------------------------------------------------------#
-	# Type 1 filter : get all the controls and the same number #
-	# of patients                  							   #
-	#----------------------------------------------------------#
 
-	# Filter data
-	controls_id = []
-	for patient_id in id_to_diag.keys():
-		if(id_to_diag[patient_id] == "Control"):
-			controls_id.append(patient_id)
+	if(method == "random"):
 
-	patient_ids = []
-	for patient_id in id_to_diag.keys():
-		if(patient_id not in controls_id and len(patient_ids) < len(controls_id)):
-			patient_ids.append(patient_id)
+		#----------------------------------------------------------#
+		# Type 1 filter : get all the controls and the same number #
+		# of patients                  							   #
+		#----------------------------------------------------------#
 
-	# write results
-	matrix_file = open(matrix_file_name, "a")
+		# Filter data
+		controls_id = []
+		for patient_id in id_to_diag.keys():
+			if(id_to_diag[patient_id] == "Control"):
+				controls_id.append(patient_id)
 
-	for patient_id in controls_id:
-		line_to_write = id_to_vector[patient_id]
-		matrix_file.write(line_to_write+"\n")
+		patient_ids = []
+		for patient_id in id_to_diag.keys():
+			if(patient_id not in controls_id and len(patient_ids) < len(controls_id)):
+				patient_ids.append(patient_id)
 
-	for patient_id in patient_ids:
-		line_to_write = id_to_vector[patient_id]
-		matrix_file.write(line_to_write+"\n")
+		# write results
+		matrix_file = open(matrix_file_name, "a")
 
-	matrix_file.close()
+		for patient_id in controls_id:
+			line_to_write = id_to_vector[patient_id]
+			matrix_file.write(line_to_write+"\n")
+
+		for patient_id in patient_ids:
+			line_to_write = id_to_vector[patient_id]
+			matrix_file.write(line_to_write+"\n")
+
+		matrix_file.close()
+
+	else:
+
+		#-------------------------------------------------------------#
+		# Type 2 filter : get all the patients for a specific disease #
+		# and the same number of control                  			  #
+		#-------------------------------------------------------------#
+
+		# Filter data
+		disease = method
+		disease_ids = []
+		for patient_id in id_to_diag.keys():
+			if(id_to_diag[patient_id] == disease):
+				disease_ids.append(patient_id)
+
+		control_ids = []
+		for patient_id in id_to_diag.keys():
+			if(id_to_diag[patient_id] == "Control" and len(disease_ids) > len(control_ids)):
+				control_ids.append(patient_id)
+
+
+		# write results
+		matrix_file = open(matrix_file_name, "a")
+
+		for patient_id in control_ids:
+			line_to_write = id_to_vector[patient_id]
+			matrix_file.write(line_to_write+"\n")
+
+		for patient_id in disease_ids:
+			line_to_write = id_to_vector[patient_id]
+			matrix_file.write(line_to_write+"\n")
+
+		matrix_file.close()

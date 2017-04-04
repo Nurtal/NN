@@ -6,18 +6,17 @@ with genetic algorithm
 
 """
 
-from sklearn import svm
+from sklearn import tree
 import platform
 import DataManager
 import numpy
 import sys
 
+
+
 # => filter data
 strategy_filter = sys.argv[1]
 DataManager.filter_input_data("../RD/sample/DATA/MATRIX/data_dichotomized_pattern_individual_to_evaluate.csv", "../RD/sample/DATA/patientIndex.csv", strategy_filter)
-
-# => filter data
-DataManager.filter_input_data("../RD/sample/DATA/MATRIX/data_dichotomized_pattern_individual_to_evaluate.csv", "../RD/sample/DATA/patientIndex.csv", "random")
 
 # => Reformat file
 if(platform.system() == "Windows"):
@@ -49,8 +48,10 @@ for x in range(0, numberOfSample):
 	y = y_sets[x]
 	y_validation = y_validation_sets[x]
 
-	clf = svm.SVC()
-	clf.fit(X, y)
+
+	# classification & prediction
+	clf = tree.DecisionTreeClassifier()
+	clf = clf.fit(X, y)
 
 	prediction = clf.predict(X_validation)
 
