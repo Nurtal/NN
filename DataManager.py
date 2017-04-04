@@ -4,6 +4,7 @@ Data Manager for the NN projet
 """
 
 import random
+import platform
 
 
 def get_NumberOfPatients(PathToMatrixFile):
@@ -280,3 +281,102 @@ def cross_validation(PathToMatrixFile, PathToMatrixLabelFile, sizeOfValidationSe
 
 	
 	return (X_sets, X_validation_sets, y_sets, y_validation_sets)
+
+
+
+def filter_input_data(input_file_name, index_file_name):
+	"""
+	-> filter input data, to use before reformat input.
+	-> reorder proportion of control/patient in cohorte
+	"""
+
+
+	# => Get Data 
+
+	id_to_vector = {}
+	id_to_diag = {}
+
+	if(platform.system() == "Windows"):
+		matrix_file_name = "..\\RD\\sample\\DATA\\MATRIX\\data_dichotomized_pattern_individual_to_evaluate_filtered.csv"
+	elif(platform.system() == "Linux"):
+		matrix_file_name = "../RD/sample/DATA/MATRIX/data_dichotomized_pattern_individual_to_evaluate_filtered.csv"
+
+	matrix_file = open(matrix_file_name, "w")
+	input_file_data = open(input_file_name, "r")
+	
+	cmpt = 0
+	for line in input_file_data:
+		lineWithoutBackN = line.split("\n")
+		lineWithoutBackN = lineWithoutBackN[0]
+		lineInArray = lineWithoutBackN.split(";")
+
+		patient_identifiant = "undef"
+		patient_diagnostique = "undef"
+		patient_vector = ""
+
+		if(cmpt == 0):
+			matrix_file.write(line)
+
+		if(cmpt > 0):
+			index = 0
+			for scalar in lineInArray:
+				if(scalar != "0" and scalar != "1"):
+					patient_identifiant = scalar
+
+					index_file = open(index_file_name, "r")
+
+					for index_file_line in index_file:
+						index_file_lineWithoutBackN = index_file_line.split("\n")
+						index_file_lineWithoutBackN = index_file_lineWithoutBackN[0]
+						index_file_line_array = index_file_lineWithoutBackN.split(";")
+
+						index_identifiant = index_file_line_array[0]
+						index_diagnostique = index_file_line_array[1]
+
+						if(index_identifiant == patient_identifiant):
+							patient_diagnostique = index_diagnostique
+							
+					index_file.close()
+				
+				patient_vector += scalar + ";"
+				
+				index += 1
+
+			patient_vector = patient_vector[:-1]
+			id_to_vector[patient_identifiant] = patient_vector
+			id_to_diag[patient_identifiant] = patient_diagnostique
+
+		cmpt += 1
+
+	
+	input_file_data.close()
+	matrix_file.close()
+
+	#----------------------------------------------------------#
+	# Type 1 filter : get all the controls and the same number #
+	# of patients                  							   #
+	#----------------------------------------------------------#
+
+	# Filter data
+	controls_id = []
+	for patient_id in id_to_diag.keys():
+		if(id_to_diag[patient_id] == "Control"):
+			controls_id.append(patient_id)
+
+	patient_ids = []
+	for patient_id in id_to_diag.keys():
+		if(patient_id not in controls_id and len(patient_ids) < len(controls_id)):
+			patient_ids.append(patient_id)
+
+	# write results
+	matrix_file = open(matrix_file_name, "a")
+
+	for patient_id in controls_id:
+		line_to_write = id_to_vector[patient_id]
+		matrix_file.write(line_to_write+"\n")
+
+	for patient_id in patient_ids:
+		line_to_write = id_to_vector[patient_id]
+		matrix_file.write(line_to_write+"\n")
+
+	matrix_file.close()
