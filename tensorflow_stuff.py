@@ -16,7 +16,7 @@ tutorial
 """
 
 import tensorflow as tf
-
+import numpy as np
 
 
 def tuto_stuff():
@@ -28,6 +28,7 @@ def tuto_stuff():
 
 	## TODO: import data
 
+	
 	## define the model
 	x = tf.placeholder(tf.float32, [None, 88])
 	W = tf.Variable(tf.zeros([88, 5])) # 88 pop for 5 disease
@@ -37,8 +38,36 @@ def tuto_stuff():
 	# Define loss and optimizer
 	y_ = tf.placeholder(tf.float32, [None, 5])
 
+	cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
+	train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+
+	sess = tf.InteractiveSession()
+	tf.global_variables_initializer().run()
+
+	## train the model
+	for _ in range(2000):
+
+		## Get the data
+		batch_xs, batch_ys = generate_data("DATA/train.csv")
+		
+		## train
+		sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+
+	## Test trained model
+	correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
+	accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+	## generate test data
+	test_data, test_labels = generate_data("DATA/test.csv")
+
+	## display results
+	print(sess.run(accuracy, feed_dict={x: test_data, y_: test_labels}))
 
 
+	
+
+
+	"""
 	## FROM TUTORIAL
 	from tensorflow.examples.tutorials.mnist import input_data
 	mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
@@ -63,7 +92,9 @@ def tuto_stuff():
 	for _ in range(1000):
 	  batch_xs, batch_ys = mnist.train.next_batch(100)
 
-	  print(batch_xs[0][0].size)
+	  #print(batch_xs[0][0].size)
+	  print(len(batch_xs))
+
 
 	  sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
@@ -71,7 +102,7 @@ def tuto_stuff():
 	correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
 	accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 	print(sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
-
+	"""
 
 ##-----------------------##
 ## Linear Model Tutorial ##
@@ -79,14 +110,13 @@ def tuto_stuff():
 
 """
 import tempfile
-import urllib
+import urllib.request
 
 train_file = tempfile.NamedTemporaryFile()
 test_file = tempfile.NamedTemporaryFile()
-urllib.urlretrieve("https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data", train_file.name)
-urllib.urlretrieve("https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.test", test_file.name)
+urllib.request.urlretrieve("https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data", train_file.name)
+urllib.request.urlretrieve("https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.test", test_file.name)
 """
-
 
 
 ### TRASH ###
@@ -117,7 +147,7 @@ def split_data():
 	label_to_train_proportion = {}
 	label_to_patients_in_train_file = {}
 	header = True
-	train_proportion = 0.7
+	train_proportion = 0.8
 
 	## count the number of patients / label
 	input_data = open("DATA/newCytoData.csv", "r")
@@ -164,5 +194,43 @@ def split_data():
 
 
 
-split_data()
+
+def generate_data(input_file):
+	## Custom generation of data from
+	## csv file to 2 numpy arrow
+	## input_file : "DATA/train.csv" or "DATA/test.csv"
+
+	batch_x = []
+	batch_y = []
+	label_to_position = {"Ctl":0, "RA":1, "SjS":2, "SLE":3, "SSc":4}
+
+	input_data = open(input_file, "r")
+	for line in input_data:
+		line = line.replace("\n", "")
+		line_in_array = line.split(",")
+		label = line_in_array[0]
+
+		## deal with data
+		vector = line_in_array[1:]
+		vector = np.asarray(vector)
+		batch_x.append(vector)
+
+		## deal with label
+		vector_y = [0,0,0,0,0]
+		vector_y[label_to_position[label]] = 1
+		vector_y = np.asarray(vector_y)
+		batch_y.append(vector_y)
+	input_data.close()
+
+
+	## return 2 2D numpy array
+	batch_x = np.asarray(batch_x)
+	batch_y = np.asarray(batch_y)
+
+	return (batch_x, batch_y)
+
+
+
+### TEST SPACE ###
+tuto_stuff()
 
