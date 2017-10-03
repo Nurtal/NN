@@ -110,14 +110,58 @@ def count_disease():
 def split_data():
 	## split a csv data file into
 	## a train.csv and a test.csv file
+	## TODO: adapt parameters to arguments
 
-	## init
+	## parameters
+	label_to_count = {}
+	label_to_train_proportion = {}
+	label_to_patients_in_train_file = {}
+	header = True
+	train_proportion = 0.7
+
+	## count the number of patients / label
 	input_data = open("DATA/newCytoData.csv", "r")
+	cmpt = 0
+	for line in input_data:
+		line = line.replace("\n", "")
+		line_in_array = line.split(",")		
+		if((header == True and cmpt != 0) or (header == False)):
+			label = line_in_array[0]
+			if label in label_to_count.keys():
+				label_to_count[label] += 1
+			else:
+				label_to_count[label] = 1
+		cmpt +=1
+	input_data.close()
+
+	## calculate the number of patient to
+	## keep for each label
+	label_to_train_proportion = label_to_count
+	for lab in label_to_train_proportion.keys():
+		number_of_train_patients = label_to_train_proportion[lab] * train_proportion
+		label_to_train_proportion[lab] = number_of_train_patients
+		label_to_patients_in_train_file[lab] = 0
+
+	## split the data
+	train_data = open("DATA/train.csv", "w")
+	test_data = open("DATA/test.csv", "w")
+	input_data = open("DATA/newCytoData.csv", "r")
+	cmpt = 0
 	for line in input_data:
 		line = line.replace("\n", "")
 		line_in_array = line.split(",")
-		print(line_in_array)
+		if((header == True and cmpt != 0) or (header == False)):
+			label = line_in_array[0]
+			if(float(label_to_patients_in_train_file[label]) <= float(label_to_train_proportion[label])):
+				train_data.write(line+"\n")
+				label_to_patients_in_train_file[label] += 1
+			else:
+				test_data.write(line+"\n")
+		cmpt += 1
 	input_data.close()
+	test_data.close()
+	train_data.close()
+
 
 
 split_data()
